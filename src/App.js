@@ -19,12 +19,16 @@ class App extends Component {
       newTask: '',
       tasks: [],
       taskIndex: 0,
+      complitedTasks: [],
+      activeTasks: [],
+      currentTasks: [],
     }
   }
 
   createTask = () => {
-    this.state.tasks.push(this.state.newTask);
-    this.setState({ index: this.state.index + 1 });
+    this.setState({ taskIndex: this.state.taskIndex + 1 });
+    this.state.tasks.push({ taskValue: this.state.newTask, key: this.state.taskIndex });
+    this.setState({ currentTasks: this.state.tasks.slice(0) });
   }
 
   onChange = (e) => {
@@ -35,6 +39,17 @@ class App extends Component {
     this.setState({ newTask: '' });
   }
 
+  filterTasks = (e) => {
+    if (e.target.id === "activeTasks" && e.target.checked) {
+      this.setState({ currentTasks: [] });
+    } else if (e.target.id === "completedTasks" && e.target.checked) {
+      this.setState({ currentTasks: [] });
+    } else {
+      this.setState({ currentTasks: this.state.tasks.slice(0) });
+      //this.state.tasks.map((task) => this.state.currentTasks.push(task));
+    }
+  }
+
   render() {
     return (
       <>
@@ -42,23 +57,23 @@ class App extends Component {
         <form action='#'>
           <input type='text' />
           <div>
-            <input type="radio" id="activeTasks" name="filterTasks" value="activeTasks"></input>
+            <input type="radio" id="activeTasks" name="filterTasks" value="activeTasks" onChange={this.filterTasks}></input>
             <label htmlFor="activeTasks">active</label>
-            <input type="radio" id="completedTasks" name="filterTasks" value="completedTasks"></input>
+            <input type="radio" id="completedTasks" name="filterTasks" value="completedTasks" onChange={this.filterTasks}></input>
             <label htmlFor="completedTasks">completed</label>
-            <input type="radio" id="allTasks" name="filterTasks" value="allTasks"></input>
+            <input type="radio" id="allTasks" name="filterTasks" value="allTasks" onChange={this.filterTasks}></input>
             <label htmlFor="allTasks">all</label>
           </div>
 
           {this.state.tasks.length === 0
             ? null
-            : this.state.tasks.map((task) => (<Task key={task} value={task} />))
+            : this.state.currentTasks.map((task) => (<Task key={task.key} value={task.taskValue} />))
           }
-          {/* пока key и value равны, не знаю откуда еще брать key */}
+
           <div>
             <input type='text' value={this.state.newTask} onChange={this.onChange} />
             <button type='submit' onClick={this.createTask}>Submit</button>
-            <button type='submit' onClick={this.clearInput}>Reset</button>
+            <button type='reset' onClick={this.clearInput}>Reset</button>
           </div>
         </form>
       </>
