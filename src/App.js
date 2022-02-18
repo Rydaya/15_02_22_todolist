@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
-const Task = ({ value }) => {
+const Task = ({ value, changeCheckbox, checked}) => {
   return (
     <div>
       <label>{value}</label>
-      <input type="checkbox" id="completedTask" />
+      <input type="checkbox" id="completedTask" checked={checked} onChange={changeCheckbox} />
       <button type='submit'>Edit</button>
       <button type='submit'>Delete</button>
     </div>
@@ -22,6 +22,7 @@ class App extends Component {
       complitedTasks: [],
       activeTasks: [],
       currentTasks: [],
+      checked: true,
     }
   }
 
@@ -37,6 +38,10 @@ class App extends Component {
 
   clearInput = () => {
     this.setState({ newTask: '' });
+  }
+
+  changeCheckbox = (e) => {
+    this.setState({ checked: !this.state.checked });
   }
 
   filterTasks = (e) => {
@@ -67,7 +72,7 @@ class App extends Component {
 
           {this.state.tasks.length === 0
             ? null
-            : this.state.currentTasks.map((task) => (<Task key={task.key} value={task.taskValue} />))
+            : this.state.currentTasks.map((task) => (<Task key={task.key} value={task.taskValue} checked={this.state.checked} onChange={this.changeCheckbox}/>))
           }
 
           <div>
