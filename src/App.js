@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-const Task = ({ value, changeCheckbox, checked}) => {
+const Task = ({ value, checked, onChange, id, onClick }) => {
   return (
     <div>
       <label>{value}</label>
-      <input type="checkbox" id="completedTask" checked={checked} onChange={changeCheckbox} />
+      <input type="checkbox" checked={checked} onChange={() => onChange(id)} />
       <button type='submit'>Edit</button>
-      <button type='submit'>Delete</button>
+      <button type='submit' onClick={() => onClick(id)}>Delete</button>
     </div>
   )
 }
@@ -17,18 +17,15 @@ class App extends Component {
 
     this.state = {
       newTask: '',
-      tasks: [],
+      tasks: [], //общий массив тасков
       taskIndex: 0,
-      complitedTasks: [],
-      activeTasks: [],
-      currentTasks: [],
-      checked: true,
+      complitedTasks: [], //массив для фильтра радиокнопок
     }
   }
 
   createTask = () => {
     this.setState({ taskIndex: this.state.taskIndex + 1 });
-    this.state.tasks.push({ taskValue: this.state.newTask, key: this.state.taskIndex });
+    this.state.tasks.push({ taskValue: this.state.newTask, id: this.state.taskIndex, checked: false });
     this.setState({ currentTasks: this.state.tasks.slice(0) });
   }
 
@@ -40,18 +37,41 @@ class App extends Component {
     this.setState({ newTask: '' });
   }
 
-  changeCheckbox = (e) => {
-    this.setState({ checked: !this.state.checked });
+  checkboxHandler = (id) => {
+    const filterTasks = this.state.tasks.map((task) => {
+      if (id === task.id) {
+        task.checked = !task.checked;
+      }
+    })
+    this.setState({ task: filterTasks })
+  }
+
+  removeTask = (id) => {
+    this.state.currentTasks.forEach((task, index) => {
+      if (id === task.id) {
+        this.state.currentTasks.splice(index, 1)
+      }
+    })
+    this.setState({ currentTasks: this.state.currentTasks })
+
+    this.state.tasks.forEach((task, index) => {
+      if (id === task.id) {
+        this.state.tasks.splice(index, 1)
+      }
+    })
+    this.setState({ tasks: this.state.tasks })
+    //тут пришлось применять функцию к массиву по радиокнопкам и общему с тасками, чтобы параллельно удалялась одна и та же кнопка
   }
 
   filterTasks = (e) => {
     if (e.target.id === "activeTasks" && e.target.checked) {
-      this.setState({ currentTasks: [] });
+      const filterTasks = this.state.tasks.filter((task) => task.checked === false);
+      this.setState({ currentTasks: filterTasks })
     } else if (e.target.id === "completedTasks" && e.target.checked) {
-      this.setState({ currentTasks: [] });
+      const filterTasks = this.state.tasks.filter((task) => task.checked === true);
+      this.setState({ currentTasks: filterTasks })
     } else {
       this.setState({ currentTasks: this.state.tasks.slice(0) });
-      //this.state.tasks.map((task) => this.state.currentTasks.push(task));
     }
   }
 
@@ -62,17 +82,19 @@ class App extends Component {
         <form action='#'>
           <input type='text' />
           <div>
-            <input type="radio" id="activeTasks" name="filterTasks" value="activeTasks" onChange={this.filterTasks}></input>
+            <input type="radio" id="activeTasks" name="filterTasks" value="activeTasks" onChange={this.filterTasks} />
             <label htmlFor="activeTasks">active</label>
-            <input type="radio" id="completedTasks" name="filterTasks" value="completedTasks" onChange={this.filterTasks}></input>
+            <input type="radio" id="completedTasks" name="filterTasks" value="completedTasks" onChange={this.filterTasks} />
             <label htmlFor="completedTasks">completed</label>
-            <input type="radio" id="allTasks" name="filterTasks" value="allTasks" onChange={this.filterTasks}></input>
+            <input type="radio" id="allTasks" name="filterTasks" value="allTasks" onChange={this.filterTasks} />
             <label htmlFor="allTasks">all</label>
           </div>
 
           {this.state.tasks.length === 0
             ? null
-            : this.state.currentTasks.map((task) => (<Task key={task.key} value={task.taskValue} checked={this.state.checked} onChange={this.changeCheckbox}/>))
+            : this.state.currentTasks.map((task) => (
+              <Task key={task.id} id={task.id} value={task.taskValue} checked={task.checked} onChange={this.checkboxHandler} onClick={this.removeTask} />
+            ))
           }
 
           <div>
