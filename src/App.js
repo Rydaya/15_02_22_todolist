@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
+import 'bootstrap/dist/css/bootstrap.css';
 
 const Task = ({ value, checked, onChange, id, onClick }) => {
   return (
-    <div>
-      <label>{value}</label>
-      <input type="checkbox" checked={checked} onChange={() => onChange(id)} />
-      <button type='submit'>Edit</button>
-      <button type='submit' onClick={() => onClick(id)}>Delete</button>
+    <div className='d-flex justify-content-between align-items-center border-bottom mb-1 pb-1'>
+      <label className='fw-bold'>{value}</label>
+      <div className='d-flex align-items-center'>
+        <input className='form-check-input mt-0 mx-1' type="checkbox" checked={checked} onChange={() => onChange(id)} />
+        <button className='btn btn-primary mx-1 btn-sm' type='submit'>Edit</button>
+        <button className='btn btn-primary btn-sm' type='submit' onClick={() => onClick(id)}>Delete</button>
+      </div>
     </div>
   )
 }
@@ -78,31 +81,46 @@ class App extends Component {
   render() {
     return (
       <>
-        <h1>ToDo List</h1>
-        <form action='#'>
-          <input type='text' />
+        <div className='container col-md-3 border border-2 rounded mt-5 p-3'>
           <div>
-            <input type="radio" id="activeTasks" name="filterTasks" value="activeTasks" onChange={this.filterTasks} />
-            <label htmlFor="activeTasks">active</label>
-            <input type="radio" id="completedTasks" name="filterTasks" value="completedTasks" onChange={this.filterTasks} />
-            <label htmlFor="completedTasks">completed</label>
-            <input type="radio" id="allTasks" name="filterTasks" value="allTasks" onChange={this.filterTasks} />
-            <label htmlFor="allTasks">all</label>
+            <h1 className='text-center'>ToDo List</h1>
           </div>
+          <form action='#'>
+            <div className='mb-3'>
+              <label className="form-label fs-6">Search</label>
+              <input type='text' className='form-control' />
+            </div>
+            <div className='mb-3'>
+              <div className='form-check form-check-inline'>
+                <input className='form-check-input' type="radio" id="activeTasks" name="filterTasks" value="activeTasks" onChange={this.filterTasks} />
+                <label className='fs-6' htmlFor="activeTasks">Active</label>
+              </div>
+              <div className='form-check form-check-inline'>
+                <input className='form-check-input' type="radio" id="completedTasks" name="filterTasks" value="completedTasks" onChange={this.filterTasks} />
+                <label className='fs-6' htmlFor="completedTasks">Completed</label>
+              </div>
+              <div className='form-check form-check-inline'>
+                <input className='form-check-input' type="radio" id="allTasks" name="filterTasks" value="allTasks" onChange={this.filterTasks} />
+                <label className='fs-6' htmlFor="allTasks">All</label>
+              </div>
+            </div>
 
-          {this.state.tasks.length === 0
-            ? null
-            : this.state.currentTasks.map((task) => (
-              <Task key={task.id} id={task.id} value={task.taskValue} checked={task.checked} onChange={this.checkboxHandler} onClick={this.removeTask} />
-            ))
-          }
+            {this.state.tasks.length === 0
+              ? null
+              : this.state.currentTasks.map((task) => (
+                <Task key={task.id} id={task.id} value={task.taskValue} checked={task.checked} onChange={this.checkboxHandler} onClick={this.removeTask} />
+              ))
+            }
 
-          <div>
-            <input type='text' value={this.state.newTask} onChange={this.onChange} />
-            <button type='submit' onClick={this.createTask}>Submit</button>
-            <button type='reset' onClick={this.clearInput}>Reset</button>
-          </div>
-        </form>
+            <div className='mt-3'>
+              <input type='text' className='form-control mb-3' value={this.state.newTask} onChange={this.onChange} />
+              <div className='d-grid gap-2 d-md-flex mx-auto'>
+                <button type='submit' onClick={this.createTask} className='btn btn-primary'>Submit</button>
+                <button type='reset' onClick={this.clearInput} className='btn btn-primary'>Reset</button>
+              </div>
+            </div>
+          </form>
+        </div>
       </>
     )
   }
