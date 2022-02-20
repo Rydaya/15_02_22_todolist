@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 
+const filterSearch = (task, search) => {
+  return task.taskValue.toLowerCase().includes(search.toLowerCase())
+}
+
+
 const Task = ({ value, checked, onChange, id, onClick }) => {
   return (
     <div className='d-flex justify-content-between align-items-center border-bottom mb-1 pb-1'>
-      <label className='fw-bold'>{value}</label>
+      <label className='text-primary text-decoration-underline'>{value}</label>
       <div className='d-flex align-items-center'>
         <input className='form-check-input mt-0 mx-1' type="checkbox" checked={checked} onChange={() => onChange(id)} />
-        <button className='btn btn-primary mx-1 btn-sm' type='submit'>Edit</button>
-        <button className='btn btn-primary btn-sm' type='submit' onClick={() => onClick(id)}>Delete</button>
+        <button className='btn btn-primary btn-sm' type='reset' onClick={() => onClick(id)}>Delete</button>
       </div>
     </div>
   )
@@ -23,6 +27,7 @@ class App extends Component {
       tasks: [], //общий массив тасков
       taskIndex: 0,
       complitedTasks: [], //массив для фильтра радиокнопок
+      serach: '',
     }
   }
 
@@ -78,6 +83,10 @@ class App extends Component {
     }
   }
 
+  searchHandler = (e) => {
+    this.setState({ serach: e.target.value })
+  }
+
   render() {
     return (
       <>
@@ -87,8 +96,7 @@ class App extends Component {
           </div>
           <form action='#'>
             <div className='mb-3'>
-              <label className="form-label fs-6">Search</label>
-              <input type='text' className='form-control' />
+              <input type='text' className='form-control' placeholder='Search...' value={this.state.serach} onChange={this.searchHandler} />
             </div>
             <div className='mb-3'>
               <div className='form-check form-check-inline'>
@@ -107,13 +115,13 @@ class App extends Component {
 
             {this.state.tasks.length === 0
               ? null
-              : this.state.currentTasks.map((task) => (
+              : this.state.currentTasks.filter((task) => filterSearch(task, this.state.serach)).map((task) => (
                 <Task key={task.id} id={task.id} value={task.taskValue} checked={task.checked} onChange={this.checkboxHandler} onClick={this.removeTask} />
               ))
             }
 
             <div className='mt-3'>
-              <input type='text' className='form-control mb-3' value={this.state.newTask} onChange={this.onChange} />
+              <input type='text' className='form-control mb-3' placeholder='New task' value={this.state.newTask} onChange={this.onChange} />
               <div className='d-grid gap-2 d-md-flex mx-auto'>
                 <button type='submit' onClick={this.createTask} className='btn btn-primary'>Submit</button>
                 <button type='reset' onClick={this.clearInput} className='btn btn-primary'>Reset</button>
